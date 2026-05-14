@@ -7,7 +7,7 @@ export const inngest = new Inngest({ id: "talent-iq" });
 const syncUser = inngest.createFunction(
   {
     id: "sync-user",
-    triggers: [{ event: "clerk/user.created" }] 
+    triggers: [{ event: "clerk/user.created" }]   // ← This was already correct
   },
   async ({ event }) => {
     await connectDB();
@@ -23,21 +23,18 @@ const syncUser = inngest.createFunction(
     const newUser = {
       clerkId: id,
       email: email_addresses[0]?.email_address,
-      name: `${first_name || ""} ${last_name || ""}`,
+      name: `${first_name || ""} ${last_name || ""}`.trim(),
       profileImage: image_url,
     };
 
     await User.create(newUser);
-
-    //todo: do sth else
-
   }
 );
 
 const deleteUserFromDB = inngest.createFunction(
   {
     id: "delete-user-from-db",
-    triggers: [{ event: "clerk/user.deleted" }] 
+    triggers: [{ event: "clerk/user.deleted" }]   // ← This was already correct
   },
   async ({ event }) => {
     await connectDB();
@@ -45,8 +42,6 @@ const deleteUserFromDB = inngest.createFunction(
     const { id } = event.data;
 
     await User.deleteOne({ clerkId: id });
-
-    //todo: do sth else
   }
 );
 
