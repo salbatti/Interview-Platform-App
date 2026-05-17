@@ -5,7 +5,9 @@ import { connectDB } from "./lib/db.js";
 import cors from "cors";
 import {serve} from "inngest/express"
 import { inngest, functions } from "./lib/inngest.js"
-
+import { clerkMiddleware } from '@clerk/express'
+import { protectRoute } from "./middleware/protectRoute.js";
+import chatRoutes from "./routes/chatRoutes.js"
 const app = express();
 
 console.log(process.env.PORT);
@@ -16,13 +18,18 @@ const __dirname = path.resolve()
 
 app.use(express.json())
 //credentials: true meaning ?? => server allows a browser to include cookies on request
-
 app.use(cors({origin:ENV.CLIENT_URL,credentials:true}))
+app.use(clerkMiddleware()); // this adds auth field to request object : req.auth()
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
-
+app.use("/api/chat",chatRoutes)
 app.get("/c", (req, res) => {
     res.status(200).json({ msg: "c poiny" })
+})
+
+// when you pass an array of middleware to Express, it automatically flattens and executes then sequentially , on by one
+app.get("/video-calls", protectRoute,(req, res) => {
+    res.status(200).json({ msg: "thus is a protected route" })
 })
 
 // make our app raeady for deployment
