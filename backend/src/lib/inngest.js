@@ -33,6 +33,7 @@ const syncUser = inngest.createFunction(
       name:newUser.name,
       image:image_url,
     })
+    //challenge : send a welcome email here later - once I complete
   }
 );
 
